@@ -4,6 +4,7 @@ from django.contrib.messages import get_messages
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.test import TestCase
+from django.urls import reverse
 
 from challenges import views
 
@@ -35,13 +36,13 @@ class TestBasics(TestCase):
         supported is shown.
         """
         res: HttpResponse = views.monthly_challenge(req=None, month="february")
-        assert res.content.decode("utf-8") == "Drink at least 2 litres of water every day!"
+        assert res.content.decode("utf-8") == "<h3>Drink at least 2 litres of water every day!</h3>"
 
         res: HttpResponse = views.monthly_challenge(req=None, month="march")
-        assert res.content.decode("utf-8") == "Practice Django for at least 20 minutes every day!"
+        assert res.content.decode("utf-8") == "<h3>Practice Django for at least 20 minutes every day!</h3>"
 
         res: HttpResponse = views.monthly_challenge(req=None, month="april")
-        assert res.content.decode("utf-8") == "This month is not yet supported!"
+        assert res.content.decode("utf-8") == "<h3>This month is not yet supported!</h3>"
 
     def test_monthly_challenge_numeric(self):
         """
@@ -51,7 +52,7 @@ class TestBasics(TestCase):
         res: HttpResponse = views.monthly_challenge_numeric(req=None, month=2)
         self.assertRedirects(
             response=res,
-            expected_url="/challenges/february",
+            expected_url=reverse("month-name", args=["february"]),
             status_code=302,
             target_status_code=200,
             fetch_redirect_response=False
@@ -60,12 +61,26 @@ class TestBasics(TestCase):
         res: HttpResponse = views.monthly_challenge_numeric(req=None, month=3)
         self.assertRedirects(
             response=res,
-            expected_url="/challenges/march",
+            expected_url=reverse("month-name", args=["march"]),
             status_code=302,
             target_status_code=200,
             fetch_redirect_response=False
         )
 
         res: HttpResponse = views.monthly_challenge_numeric(req=None, month=1)
-        assert res.content.decode("utf-8") == "This month is not yet supported with numeric index!"
+        assert res.content.decode("utf-8") == "<h3>This month is not yet supported with numeric index!</h3>"
 
+    def test_index_page(self):
+        """
+        Test that the index page of challenges contains links
+        to the month of February and March.
+        """
+        res: HttpResponse = views.index_page(req=None)
+        february_url: str = reverse("month-name", args=["february"])
+        march_url: str = reverse("month-name", args=["march"])
+        self.assertContains(response=res,
+                            text=f'<li><a href="{february_url}">'
+                                 f'February</a></li>')
+        self.assertContains(response=res,
+                            text=f'<li><a href="{march_url}">'
+                                 f'March</a></li>')
