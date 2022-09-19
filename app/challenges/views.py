@@ -12,7 +12,7 @@ monthly_challenges: dict = {
 }
 
 
-def hello_django(req: WSGIRequest):
+def hello_django(req: WSGIRequest) -> HttpResponse:
     """
     Hello world program from Django. Any Django view function always
     gets an input of type `WSGIRequest`.
@@ -20,7 +20,7 @@ def hello_django(req: WSGIRequest):
     return HttpResponse(f"Hello Django from {req.path}!")
 
 
-def january(req: Optional[WSGIRequest]):
+def january(req: Optional[WSGIRequest]) -> HttpResponse:
     """Define a challenge for January."""
     return HttpResponse("Eat no meat for the entire month!")
 
