@@ -36,10 +36,27 @@ class TestBasics(TestCase):
         supported is shown.
         """
         res: HttpResponse = views.monthly_challenge(req=None, month="february")
-        assert res.content.decode("utf-8") == "<h3>Drink at least 2 litres of water every day!</h3>"
+        decoded_res: str = res.content.decode("utf-8")
+        self.assertContains(res, "<title>February Challenge</title>")
+        self.assertContains(
+            res,
+            "<h1>Challenge for February</h1>"
+        )
+        self.assertContains(
+            res,
+            "<h2>Drink at least 2 litres of water every day!</h2>"
+        )
 
         res: HttpResponse = views.monthly_challenge(req=None, month="march")
-        assert res.content.decode("utf-8") == "<h3>Practice Django for at least 20 minutes every day!</h3>"
+        self.assertContains(res, "<title>March Challenge</title>")
+        self.assertContains(
+            res,
+            "<h1>Challenge for March</h1>"
+        )
+        self.assertContains(
+            res,
+            "<h2>Practice Django for at least 20 minutes every day!</h2>"
+        )
 
         res: HttpResponse = views.monthly_challenge(req=None, month="april")
         assert res.content.decode("utf-8") == "<h3>This month is not yet supported!</h3>"

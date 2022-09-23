@@ -2,6 +2,8 @@ from typing import Optional, Union
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.urls import reverse
 
 # Create your views here.
@@ -49,11 +51,19 @@ def monthly_challenge(
     """Define month-wise challenges."""
     try:
         selected_challenge: str = monthly_challenges[month]
-        response: str = f"<h3>{selected_challenge}</h3>"
+        # The `render` function loads a HTML, converts it to a string,
+        # and renders it. It needs the request object to do so.
+        return render(
+            req,
+            "challenges/challenge.html",
+            {
+                "month": month,
+                "text": selected_challenge
+            }
+        )
+        # response: str = f"<h3>{selected_challenge}</h3>"
     except KeyError:
         return HttpResponseNotFound("<h3>This month is not yet supported!</h3>")
-
-    return HttpResponse(response)
 
 
 def index_page(req: Optional[WSGIRequest]) -> HttpResponse:
