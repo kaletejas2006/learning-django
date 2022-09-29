@@ -10,9 +10,10 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  - script: |
-      python --version
-    displayName: 'Check Python version'
+  - task: Bash@3
+    inputs:
+      targetType: 'filePath'
+      filePath: 'ci/run_unit_tests.sh'
 
   - task: WhiteSource@21
     inputs:
