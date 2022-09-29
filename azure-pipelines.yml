@@ -11,11 +11,11 @@ pool:
 
 steps:
   - checkout: self
-  - script: |
+  - bash: |
     python --version
-  displayName: Check Python version
+    name: Check Python version
 
-#  - task: WhiteSource@21
-#    inputs:
-#      cwd: '$(System.DefaultWorkingDirectory)'
-#      scanReportTimeout: '1'
+  - task: WhiteSource@21
+    inputs:
+      cwd: '$(System.DefaultWorkingDirectory)'
+      scanReportTimeout: '1'
