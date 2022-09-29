@@ -11,7 +11,7 @@ pool:
 
 steps:
   - script: |
-      echo $(python --version)
+      python --version
     displayName: 'Check Python version'
 
   - task: WhiteSource@21
