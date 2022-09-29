@@ -9,14 +9,27 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  PIP_CACHE_DIR: $(Pipeline.Workspace)/.pip
+
 steps:
+  - task: Cache@2
+    inputs:
+      key: 'python | "$(Agent.OS)" | requirements.txt'
+      restoreKeys: |
+        python | "$(Agent.OS)"
+        python
+      path: $(PIP_CACHE_DIR)
+    displayName: 'Cache pip packages'
   - task: Bash@3
     inputs:
       targetType: 'filePath'
       filePath: 'ci/run_unit_tests.sh'
       workingDirectory: 'app/'
+    displayName: 'Run unit tests'
 
   - task: WhiteSource@21
     inputs:
       cwd: '$(System.DefaultWorkingDirectory)'
       scanReportTimeout: '1'
+    displayName: 'Inspect code with Mend Bolt'
