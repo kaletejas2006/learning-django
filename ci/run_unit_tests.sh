@@ -1,2 +1,2 @@
-PYTHON_VERSION="python --version"
+PYTHON_VERSION="$(python --version)"
 echo "$PYTHON_VERSION"
