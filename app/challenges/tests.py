@@ -1,8 +1,7 @@
 from unittest.mock import patch
 
-from django.contrib.messages import get_messages
 from django.core.handlers.wsgi import WSGIRequest
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.test import TestCase
 from django.urls import reverse
 
@@ -36,13 +35,44 @@ class TestBasics(TestCase):
         supported is shown.
         """
         res: HttpResponse = views.monthly_challenge(req=None, month="february")
-        assert res.content.decode("utf-8") == "<h3>Drink at least 2 litres of water every day!</h3>"
+        self.assertContains(
+            response=res, text="<title>February's Challenge</title>", html=True
+        )
+        self.assertContains(
+            response=res, text="<h1>Challenge for the month of February</h1>", html=True
+        )
+        self.assertContains(
+            response=res,
+            text="<h3>Drink at least 2 litres of water every day!</h3>",
+            html=True,
+        )
 
         res: HttpResponse = views.monthly_challenge(req=None, month="march")
-        assert res.content.decode("utf-8") == "<h3>Practice Django for at least 20 minutes every day!</h3>"
+        self.assertContains(
+            response=res, text="<title>March's Challenge</title>", html=True
+        )
+        self.assertContains(
+            response=res, text="<h1>Challenge for the month of March</h1>", html=True
+        )
+        self.assertContains(
+            response=res,
+            text="<h3>Practice Django for at least 20 minutes every day!</h3>",
+            html=True,
+        )
 
         res: HttpResponse = views.monthly_challenge(req=None, month="april")
-        assert res.content.decode("utf-8") == "<h3>This month is not yet supported!</h3>"
+        self.assertContains(
+            response=res, text="<title>April's Challenge</title>", html=True
+        )
+        self.assertContains(
+            response=res, text="<h1>Challenge for the month of April</h1>", html=True
+        )
+        self.assertContains(
+            response=res, text="<h3>No challenge for this month. Enjoy!</h3>", html=True
+        )
+
+        with self.assertRaises(Http404):
+            res: HttpResponse = views.monthly_challenge(req=None, month="may")
 
     def test_monthly_challenge_numeric(self):
         """
@@ -55,7 +85,7 @@ class TestBasics(TestCase):
             expected_url=reverse("month-name", args=["february"]),
             status_code=302,
             target_status_code=200,
-            fetch_redirect_response=False
+            fetch_redirect_response=False,
         )
 
         res: HttpResponse = views.monthly_challenge_numeric(req=None, month=3)
@@ -64,11 +94,14 @@ class TestBasics(TestCase):
             expected_url=reverse("month-name", args=["march"]),
             status_code=302,
             target_status_code=200,
-            fetch_redirect_response=False
+            fetch_redirect_response=False,
         )
 
         res: HttpResponse = views.monthly_challenge_numeric(req=None, month=1)
-        assert res.content.decode("utf-8") == "<h3>This month is not yet supported with numeric index!</h3>"
+        assert (
+            res.content.decode("utf-8")
+            == "<h3>This month is not yet supported with numeric index!</h3>"
+        )
 
     def test_index_page(self):
         """
@@ -76,11 +109,24 @@ class TestBasics(TestCase):
         to the month of February and March.
         """
         res: HttpResponse = views.index_page(req=None)
+        index_url: str = reverse("index")
         february_url: str = reverse("month-name", args=["february"])
         march_url: str = reverse("month-name", args=["march"])
-        self.assertContains(response=res,
-                            text=f'<li><a href="{february_url}">'
-                                 f'February</a></li>')
-        self.assertContains(response=res,
-                            text=f'<li><a href="{march_url}">'
-                                 f'March</a></li>')
+        self.assertContains(
+            response=res,
+            text=f'<header><nav><a href="{index_url}">All Challenges</a></nav></header>',
+            html=True,
+        )
+        self.assertContains(
+            response=res, text="<title>All Challenges</title>", html=True
+        )
+        self.assertContains(
+            response=res,
+            text=f'<li><a href="{february_url}">' f"February</a></li>",
+            html=True,
+        )
+        self.assertContains(
+            response=res,
+            text=f'<li><a href="{march_url}">' f"March</a></li>",
+            html=True,
+        )
