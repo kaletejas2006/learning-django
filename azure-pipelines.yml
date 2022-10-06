@@ -8,6 +8,8 @@ variables:
   PIP_CACHE_DIR: $(Pipeline.Workspace)/.pip
 
 steps:
+  # Caching code copied from:
+  # https://stackoverflow.com/questions/64845489/azure-devops-pipelines-cache-python-dependencies
   - task: Cache@2
     inputs:
       key: 'python | "$(Agent.OS)" | requirements.txt'
@@ -16,6 +18,7 @@ steps:
         python
       path: $(PIP_CACHE_DIR)
     displayName: 'Cache pip packages'
+
   - task: Bash@3
     inputs:
       targetType: 'filePath'
