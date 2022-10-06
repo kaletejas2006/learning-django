@@ -9,7 +9,7 @@ from challenges import views
 
 
 # Create your tests here.
-class TestBasics(TestCase):
+class TestChallenges(TestCase):
     @patch("django.core.handlers.wsgi.WSGIRequest")
     def test_hello_django(self, mock_wsgirequest):
         """
