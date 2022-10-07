@@ -72,7 +72,7 @@ class TestChallenges(TestCase):
         )
 
         with self.assertRaises(Http404):
-            res: HttpResponse = views.monthly_challenge(req=None, month="may")
+            _ = views.monthly_challenge(req=None, month="may")
 
     def test_monthly_challenge_numeric(self):
         """

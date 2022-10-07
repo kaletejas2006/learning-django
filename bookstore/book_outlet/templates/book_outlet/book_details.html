@@ -1,0 +1,18 @@
+{% extends "book_outlet/base.html" %}
+
+{% block title %}
+    {{ book.title }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ book.title }}</h1>
+    <h2>{{ book.author }}</h2>
+
+    <p>The book has a rating {{ book.rating }}
+    {% if book.is_nyt_bestseller %}
+        and is a New York Times bestseller.
+    {% else %}
+        but is not a New York Times bestseller.
+    {% endif %}
+    </p>
+{% endblock %}
